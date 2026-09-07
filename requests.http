@@ -1,0 +1,51 @@
+### Check that the server is running
+GET http://localhost:3000/
+
+### Get all posts
+GET http://localhost:3000/posts
+
+### Get one post
+GET http://localhost:3000/posts/1
+
+### Filter posts by media type
+GET http://localhost:3000/posts?mediaType=video
+
+### Create a post
+POST http://localhost:3000/posts
+Content-Type: application/json
+
+{
+  "title": "Boss fight",
+  "game": "Elden Ring",
+  "mediaType": "video",
+  "mediaUrl": "https://example.com/boss-fight.mp4",
+  "description": "A short video from the boss fight.",
+  "comments": ["Well played!"]
+}
+
+### Fully update the created post
+PUT http://localhost:3000/posts/3
+Content-Type: application/json
+
+{
+  "title": "Boss fight - no damage",
+  "game": "Elden Ring",
+  "mediaType": "video",
+  "mediaUrl": "https://example.com/boss-fight-no-damage.mp4",
+  "description": "The boss was defeated without taking damage.",
+  "comments": ["Impressive!", "Great timing!"]
+}
+
+### Delete the created post
+DELETE http://localhost:3000/posts/3
+
+### Check the 404 response after deletion
+GET http://localhost:3000/posts/3
+
+### Check validation (400)
+POST http://localhost:3000/posts
+Content-Type: application/json
+
+{
+  "title": "Invalid post"
+}
