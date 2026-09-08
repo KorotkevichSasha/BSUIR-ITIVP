@@ -10,7 +10,7 @@
       "request": {
         "method": "GET",
         "header": [],
-        "url": "http://localhost:3000/posts"
+        "url": "http://localhost:3001/posts"
       }
     },
     {
@@ -18,7 +18,7 @@
       "request": {
         "method": "GET",
         "header": [],
-        "url": "http://localhost:3000/posts/1"
+        "url": "http://localhost:3001/posts/1"
       }
     },
     {
@@ -40,7 +40,7 @@
             }
           }
         },
-        "url": "http://localhost:3000/posts"
+        "url": "http://localhost:3001/posts"
       }
     },
     {
@@ -62,7 +62,7 @@
             }
           }
         },
-        "url": "http://localhost:3000/posts/3"
+        "url": "http://localhost:3001/posts/3"
       }
     },
     {
@@ -70,7 +70,7 @@
       "request": {
         "method": "DELETE",
         "header": [],
-        "url": "http://localhost:3000/posts/3"
+        "url": "http://localhost:3001/posts/3"
       }
     },
     {
@@ -78,7 +78,7 @@
       "request": {
         "method": "GET",
         "header": [],
-        "url": "http://localhost:3000/posts/3"
+        "url": "http://localhost:3001/posts/3"
       }
     },
     {
@@ -100,7 +100,7 @@
             }
           }
         },
-        "url": "http://localhost:3000/posts"
+        "url": "http://localhost:3001/posts"
       }
     }
   ]

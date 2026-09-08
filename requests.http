@@ -1,17 +1,17 @@
 ### Check that the server is running
-GET http://localhost:3000/
+GET http://localhost:3001/
 
 ### Get all posts
-GET http://localhost:3000/posts
+GET http://localhost:3001/posts
 
 ### Get one post
-GET http://localhost:3000/posts/1
+GET http://localhost:3001/posts/1
 
 ### Filter posts by media type
-GET http://localhost:3000/posts?mediaType=video
+GET http://localhost:3001/posts?mediaType=video
 
 ### Create a post
-POST http://localhost:3000/posts
+POST http://localhost:3001/posts
 Content-Type: application/json
 
 {
@@ -24,7 +24,7 @@ Content-Type: application/json
 }
 
 ### Fully update the created post
-PUT http://localhost:3000/posts/3
+PUT http://localhost:3001/posts/3
 Content-Type: application/json
 
 {
@@ -37,13 +37,13 @@ Content-Type: application/json
 }
 
 ### Delete the created post
-DELETE http://localhost:3000/posts/3
+DELETE http://localhost:3001/posts/3
 
 ### Check the 404 response after deletion
-GET http://localhost:3000/posts/3
+GET http://localhost:3001/posts/3
 
 ### Check validation (400)
-POST http://localhost:3000/posts
+POST http://localhost:3001/posts
 Content-Type: application/json
 
 {
