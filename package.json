@@ -8,7 +8,7 @@
     "dev": "nodemon server.js"
   },
   "keywords": [],
-  "author": "Student",
+  "author": "Korotkevich",
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
