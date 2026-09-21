@@ -20,7 +20,8 @@ Content-Type: application/json
   "mediaType": "video",
   "mediaUrl": "https://example.com/boss-fight.mp4",
   "description": "A short video from the boss fight.",
-  "comments": ["Well played!"]
+  "comments": ["Well played!"],
+  "likesCount": 3
 }
 
 ### Fully update the created post
@@ -33,7 +34,8 @@ Content-Type: application/json
   "mediaType": "video",
   "mediaUrl": "https://example.com/boss-fight-no-damage.mp4",
   "description": "The boss was defeated without taking damage.",
-  "comments": ["Impressive!", "Great timing!"]
+  "comments": ["Impressive!", "Great timing!"],
+  "likesCount": 8
 }
 
 ### Delete the created post

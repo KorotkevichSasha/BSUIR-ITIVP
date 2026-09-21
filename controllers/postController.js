@@ -1,11 +1,17 @@
-const { posts, getNextId } = require('../models/postModel');
+const { Post } = require('../models');
 
 function validatePost(post) {
   if (!post || typeof post !== 'object' || Array.isArray(post)) {
     return 'Request body must be a JSON object';
   }
 
-  const requiredStringFields = ['title', 'game', 'mediaType', 'mediaUrl', 'description'];
+  const requiredStringFields = [
+    'title',
+    'game',
+    'mediaType',
+    'mediaUrl',
+    'description',
+  ];
 
   for (const field of requiredStringFields) {
     if (typeof post[field] !== 'string' || post[field].trim() === '') {
@@ -25,95 +31,119 @@ function validatePost(post) {
     return 'Field "comments" must be an array of strings';
   }
 
+  if (
+    post.likesCount !== undefined &&
+    (!Number.isInteger(post.likesCount) || post.likesCount < 0)
+  ) {
+    return 'Field "likesCount" must be a non-negative integer';
+  }
+
   return null;
 }
 
-function getPosts(req, res) {
-  const { mediaType } = req.query;
+async function getPosts(req, res, next) {
+  try {
+    const { mediaType } = req.query;
 
-  if (mediaType && !['screenshot', 'video'].includes(mediaType)) {
-    return res.status(400).json({
-      error: 'Query parameter "mediaType" must be "screenshot" or "video"',
+    if (mediaType && !['screenshot', 'video'].includes(mediaType)) {
+      return res.status(400).json({
+        error: 'Query parameter "mediaType" must be "screenshot" or "video"',
+      });
+    }
+
+    const posts = await Post.findAll({
+      where: mediaType ? { mediaType } : {},
+      order: [['id', 'ASC']],
     });
+
+    return res.json(posts);
+  } catch (error) {
+    return next(error);
   }
-
-  const result = mediaType
-    ? posts.filter((post) => post.mediaType === mediaType)
-    : posts;
-
-  return res.json(result);
 }
 
-function getPostById(req, res) {
-  const id = Number(req.params.id);
-  const post = posts.find((item) => item.id === id);
+async function getPostById(req, res, next) {
+  try {
+    const post = await Post.findByPk(req.params.id);
 
-  if (!post) {
-    return res.status(404).json({ error: 'Post not found' });
+    if (!post) {
+      return res.status(404).json({ error: 'Post not found' });
+    }
+
+    return res.json(post);
+  } catch (error) {
+    return next(error);
   }
-
-  return res.json(post);
 }
 
-function createPost(req, res) {
-  const validationError = validatePost(req.body);
+async function createPost(req, res, next) {
+  try {
+    const validationError = validatePost(req.body);
 
-  if (validationError) {
-    return res.status(400).json({ error: validationError });
+    if (validationError) {
+      return res.status(400).json({ error: validationError });
+    }
+
+    const post = await Post.create({
+      title: req.body.title.trim(),
+      game: req.body.game.trim(),
+      mediaType: req.body.mediaType,
+      mediaUrl: req.body.mediaUrl.trim(),
+      description: req.body.description.trim(),
+      comments: req.body.comments || [],
+      likesCount: req.body.likesCount || 0,
+    });
+
+    return res.status(201).json(post);
+  } catch (error) {
+    return next(error);
   }
-
-  const newPost = {
-    id: getNextId(),
-    title: req.body.title.trim(),
-    game: req.body.game.trim(),
-    mediaType: req.body.mediaType,
-    mediaUrl: req.body.mediaUrl.trim(),
-    description: req.body.description.trim(),
-    comments: req.body.comments || [],
-  };
-
-  posts.push(newPost);
-  return res.status(201).json(newPost);
 }
 
-function updatePost(req, res) {
-  const id = Number(req.params.id);
-  const postIndex = posts.findIndex((item) => item.id === id);
+async function updatePost(req, res, next) {
+  try {
+    const post = await Post.findByPk(req.params.id);
 
-  if (postIndex === -1) {
-    return res.status(404).json({ error: 'Post not found' });
+    if (!post) {
+      return res.status(404).json({ error: 'Post not found' });
+    }
+
+    const validationError = validatePost(req.body);
+
+    if (validationError) {
+      return res.status(400).json({ error: validationError });
+    }
+
+    await post.update({
+      title: req.body.title.trim(),
+      game: req.body.game.trim(),
+      mediaType: req.body.mediaType,
+      mediaUrl: req.body.mediaUrl.trim(),
+      description: req.body.description.trim(),
+      comments: req.body.comments || [],
+      likesCount: req.body.likesCount ?? post.likesCount,
+    });
+
+    return res.json(post);
+  } catch (error) {
+    return next(error);
   }
-
-  const validationError = validatePost(req.body);
-
-  if (validationError) {
-    return res.status(400).json({ error: validationError });
-  }
-
-  const updatedPost = {
-    id,
-    title: req.body.title.trim(),
-    game: req.body.game.trim(),
-    mediaType: req.body.mediaType,
-    mediaUrl: req.body.mediaUrl.trim(),
-    description: req.body.description.trim(),
-    comments: req.body.comments || [],
-  };
-
-  posts[postIndex] = updatedPost;
-  return res.json(updatedPost);
 }
 
-function deletePost(req, res) {
-  const id = Number(req.params.id);
-  const postIndex = posts.findIndex((item) => item.id === id);
+async function deletePost(req, res, next) {
+  try {
+    const deletedCount = await Post.destroy({
+      where: { id: req.params.id },
+    });
 
-  if (postIndex === -1) {
-    return res.status(404).json({ error: 'Post not found' });
+    if (deletedCount === 0) {
+      return res.status(404).json({ error: 'Post not found' });
+    }
+
+    return res.status(204).send();
+  } catch (error) {
+    return next(error);
   }
-
-  posts.splice(postIndex, 1);
-  return res.status(204).send();
 }
 
 module.exports = {

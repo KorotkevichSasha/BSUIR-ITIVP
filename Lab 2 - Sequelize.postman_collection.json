@@ -1,0 +1,67 @@
+{
+  "info": {
+    "name": "Lab 2 - Sequelize",
+    "description": "CRUD API connected to PostgreSQL in Supabase through Sequelize.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:3001" }
+  ],
+  "item": [
+    {
+      "name": "Get all posts",
+      "request": { "method": "GET", "url": "{{baseUrl}}/posts" }
+    },
+    {
+      "name": "Get post by ID",
+      "request": { "method": "GET", "url": "{{baseUrl}}/posts/1" }
+    },
+    {
+      "name": "Create post",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"Boss fight\",\n  \"game\": \"Elden Ring\",\n  \"mediaType\": \"video\",\n  \"mediaUrl\": \"https://example.com/boss.mp4\",\n  \"description\": \"Final boss battle\",\n  \"comments\": [\"Amazing!\"],\n  \"likesCount\": 3\n}",
+          "options": { "raw": { "language": "json" } }
+        },
+        "url": "{{baseUrl}}/posts"
+      }
+    },
+    {
+      "name": "Update post",
+      "request": {
+        "method": "PUT",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"Updated boss fight\",\n  \"game\": \"Elden Ring\",\n  \"mediaType\": \"video\",\n  \"mediaUrl\": \"https://example.com/updated.mp4\",\n  \"description\": \"Updated battle\",\n  \"comments\": [],\n  \"likesCount\": 8\n}",
+          "options": { "raw": { "language": "json" } }
+        },
+        "url": "{{baseUrl}}/posts/3"
+      }
+    },
+    {
+      "name": "Delete post",
+      "request": { "method": "DELETE", "url": "{{baseUrl}}/posts/3" }
+    },
+    {
+      "name": "Post not found",
+      "request": { "method": "GET", "url": "{{baseUrl}}/posts/999" }
+    },
+    {
+      "name": "Validation error",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"\"\n}",
+          "options": { "raw": { "language": "json" } }
+        },
+        "url": "{{baseUrl}}/posts"
+      }
+    }
+  ]
+}
