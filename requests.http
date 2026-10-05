@@ -51,3 +51,35 @@ Content-Type: application/json
 {
   "title": "Invalid post"
 }
+
+### Register (201; repeat the email for 409)
+POST http://localhost:3001/auth/register
+Content-Type: application/json
+
+{
+  "email": "student@example.com",
+  "password": "Lab3-test-2026!"
+}
+
+### Login and copy token from the response
+POST http://localhost:3001/auth/login
+Content-Type: application/json
+
+{
+  "email": "student@example.com",
+  "password": "Lab3-test-2026!"
+}
+
+### Replace the placeholder with the token from login
+@token = paste_token_here
+
+### Current user (200)
+GET http://localhost:3001/profile
+Authorization: Bearer {{token}}
+
+### No token (401)
+GET http://localhost:3001/profile
+
+### Admin only (403 for user; 200 for admin)
+GET http://localhost:3001/admin
+Authorization: Bearer {{token}}

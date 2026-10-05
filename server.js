@@ -2,6 +2,9 @@ require('dotenv').config();
 
 const express = require('express');
 const postRoutes = require('./routes/postRoutes');
+const authRoutes = require('./routes/authRoutes');
+const { authenticate, isAdmin } = require('./middleware/auth');
+const { getProfile, getAdmin } = require('./controllers/authController');
 const { sequelize } = require('./models');
 
 const app = express();
@@ -14,6 +17,9 @@ app.get('/', (req, res) => {
 });
 
 app.use('/posts', postRoutes);
+app.use('/auth', authRoutes);
+app.get('/profile', authenticate, getProfile);
+app.get('/admin', authenticate, isAdmin, getAdmin);
 
 app.use((req, res) => {
   res.status(404).json({ error: 'Route not found' });
@@ -35,6 +41,9 @@ app.use((err, req, res, next) => {
 
 async function startServer() {
   try {
+    if (!process.env.JWT_SECRET) {
+      throw new Error('JWT_SECRET is required in .env');
+    }
     await sequelize.authenticate();
     console.log('Database connection established');
 
