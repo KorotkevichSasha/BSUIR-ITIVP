@@ -24,7 +24,7 @@ button:hover, .button:hover { background: #163b78; color: #fff; }
 .error { color: #9c2323; background: #fdeaea; padding: 14px; border-radius: 4px; max-width: 660px; }
 .error-code { font-size: 48px; font-weight: bold; margin: 0; color: #526174; }
 .table-wrap { overflow-x: auto; margin-top: 24px; border: 1px solid #dce2e9; border-radius: 6px; }
-table { width: 100%; background: #fff; border-collapse: collapse; }
+table { width: 100%; min-width: 850px; background: #fff; border-collapse: collapse; }
 th, td { text-align: left; padding: 12px 15px; border-bottom: 1px solid #e2e8f0; }
 th { background: #eaf0f7; white-space: nowrap; }
 td.url { overflow-wrap: anywhere; }
