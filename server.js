@@ -16,9 +16,13 @@ const PORT = process.env.PORT || 3001;
 
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
+app.locals.formatDate = (value) => new Date(value).toLocaleString('ru-RU', {
+  timeZone: 'Europe/Minsk', year: 'numeric', month: '2-digit', day: '2-digit',
+  hour: '2-digit', minute: '2-digit', second: '2-digit', fractionalSecondDigits: 3,
+});
 
-app.use(requestLogger);
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(requestLogger);
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 

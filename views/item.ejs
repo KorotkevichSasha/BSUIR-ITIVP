@@ -4,7 +4,11 @@
   <p class="badge"><%= item.mediaType === 'video' ? 'Видео' : 'Скриншот' %></p>
   <h1><%= item.title %></h1>
   <p class="game">Игра: <%= item.game %></p>
+  <p>Лайков: <%= item.likesCount %></p>
+  <p>Время создания: <%= formatDate(item.createdAt) %> · ID <%= item.id %></p>
   <p class="description"><%= item.description %></p>
   <a href="<%= item.mediaUrl %>" target="_blank" rel="noopener noreferrer">Открыть медиа ↗</a>
 </article>
 <%- include('partials/footer') %>
+
+

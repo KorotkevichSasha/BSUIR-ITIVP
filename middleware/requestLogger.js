@@ -1,31 +1,22 @@
-const { RequestLog } = require('../models');
+const fs = require('node:fs/promises');
+const path = require('node:path');
 
-function requestLogger(req, res, next) {
-  const requestedAt = new Date();
-  const startedAt = process.hrtime.bigint();
+const logFile = process.env.REQUEST_LOG_FILE || path.join(__dirname, '../logs/requests.log');
 
-  // Статус и длительность известны после отправки ответа.
-  res.on('finish', async () => {
-    const durationMs = Number(process.hrtime.bigint() - startedAt) / 1e6;
-    const entry = {
-      requestedAt,
-      method: req.method,
-      url: req.originalUrl,
-      statusCode: res.statusCode,
-      durationMs: Number(durationMs.toFixed(2)),
-    };
-
-    console.log(`[${requestedAt.toISOString()}] ${entry.method} ${entry.url} ${entry.statusCode} ${entry.durationMs} ms`);
-
-    try {
-      await RequestLog.create(entry);
-    } catch (error) {
-      // Ошибка записи журнала не должна останавливать приложение.
-      console.error('Unable to save request log:', error.message);
-    }
-  });
-
-  next();
+async function requestLogger(req, res, next) {
+  const entry = { requestedAt: new Date().toISOString(), method: req.method, url: req.originalUrl };
+  try {
+    await fs.mkdir(path.dirname(logFile), { recursive: true });
+    // Append creates a missing file and preserves previous entries.
+    await fs.appendFile(logFile, JSON.stringify(entry) + '\n', 'utf8');
+    console.log(`[${entry.requestedAt}] ${entry.method} ${entry.url}`);
+    return next();
+  } catch (cause) {
+    const error = new Error('Не удалось записать журнал запросов', { cause });
+    error.publicMessage = 'Не удалось открыть или записать файл журнала. Проверьте доступ к каталогу logs и повторите запрос.';
+    return next(error);
+  }
 }
 
 module.exports = requestLogger;
+module.exports.logFile = logFile;

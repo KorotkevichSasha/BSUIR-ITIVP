@@ -27,7 +27,10 @@ function errorHandler(err, req, res, next) {
   if (isApiRequest(req)) {
     return res.status(500).json({ error: 'Internal server error' });
   }
-  return res.status(500).render('500', { title: 'Ошибка сервера' });
+  return res.status(500).render('500', {
+    title: 'Ошибка сервера',
+    explanation: err.publicMessage || 'При обработке запроса произошёл внутренний сбой. Повторите запрос позже. Подробности ошибки записаны в консоль сервера.',
+  });
 }
 
 module.exports = { notFound, errorHandler };

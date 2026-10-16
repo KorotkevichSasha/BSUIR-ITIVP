@@ -1,0 +1,8 @@
+{
+  "title": { "minLength": 1, "maxLength": 100 },
+  "game": { "minLength": 1, "maxLength": 80 },
+  "mediaUrl": { "minLength": 1, "maxLength": 2048 },
+  "description": { "minLength": 1, "maxLength": 1000 },
+  "mediaTypes": ["screenshot", "video"],
+  "likesCount": { "min": 0, "max": 1000000 }
+}

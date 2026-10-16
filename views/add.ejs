@@ -1,15 +1,17 @@
 <%- include('partials/header') %>
 <h1><%= title %></h1>
 <p>Пользователь: <strong><%= user.name %></strong></p>
-<% if (error) { %>
-  <p class="error" role="alert"><%= error %></p>
+<% if (errors.length) { %>
+  <div class="error" role="alert"><strong>Проверьте введённые данные:</strong>
+    <ul><% errors.forEach((error) => { %><li><%= error %></li><% }) %></ul>
+  </div>
 <% } %>
 <form class="card form" method="post" action="/add?auth=1">
   <label for="title">Название</label>
-  <input id="title" name="title" required value="<%= values.title || '' %>">
+  <input id="title" name="title" required maxlength="<%= limits.title.maxLength %>" value="<%= values.title || '' %>">
 
   <label for="game">Игра</label>
-  <input id="game" name="game" required value="<%= values.game || '' %>">
+  <input id="game" name="game" required maxlength="<%= limits.game.maxLength %>" value="<%= values.game || '' %>">
 
   <label for="mediaType">Тип медиа</label>
   <select id="mediaType" name="mediaType">
@@ -18,10 +20,14 @@
   </select>
 
   <label for="mediaUrl">Ссылка на медиа</label>
-  <input id="mediaUrl" name="mediaUrl" type="url" required placeholder="https://..." value="<%= values.mediaUrl || '' %>">
+  <input id="mediaUrl" name="mediaUrl" type="url" required maxlength="<%= limits.mediaUrl.maxLength %>" placeholder="https://..." value="<%= values.mediaUrl || '' %>">
+
+  <label for="likesCount">Количество лайков</label>
+  <input id="likesCount" name="likesCount" type="number" required min="<%= limits.likesCount.min %>" max="<%= limits.likesCount.max %>" step="1" value="<%= values.likesCount %>">
 
   <label for="description">Описание</label>
-  <textarea id="description" name="description" rows="4" required><%= values.description || '' %></textarea>
+  <textarea id="description" name="description" rows="3" required maxlength="<%= limits.description.maxLength %>"><%= values.description || '' %></textarea>
+  <small>Название — до <%= limits.title.maxLength %>, игра — до <%= limits.game.maxLength %>, описание — до <%= limits.description.maxLength %> символов. Поля из пробелов не принимаются.</small>
 
   <button type="submit">Опубликовать</button>
 </form>

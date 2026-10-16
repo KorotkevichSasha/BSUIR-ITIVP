@@ -1,25 +1,22 @@
 <%- include('partials/header') %>
 <h1><%= title %></h1>
-<p class="intro">Последние 100 записей из таблицы RequestLogs в PostgreSQL.</p>
-<p>Запрос появляется после завершения ответа и сохранения в БД. Для новых записей обновите страницу.</p>
+<p class="intro">Последние 100 записей из файла logs/requests.log. Вариант 13: логирование в файл.</p>
+<p>Каждый запрос сохраняется до вызова обработчика. Для новых записей обновите страницу.</p>
 <div class="table-wrap">
   <table>
     <thead>
-      <tr><th>ID</th><th>Время запроса</th><th>Метод</th><th>URL</th><th>Статус</th><th>Время, мс</th></tr>
+      <tr><th>Время запроса</th><th>Метод</th><th>URL</th></tr>
     </thead>
     <tbody>
       <% logs.forEach((log) => { %>
         <tr>
-          <td><%= log.id %></td>
-          <td><%= log.requestedAt.toLocaleString('ru-RU', { timeZone: 'Europe/Minsk' }) %></td>
+          <td><%= new Date(log.requestedAt).toLocaleString('ru-RU', { timeZone: 'Europe/Minsk' }) %></td>
           <td><%= log.method %></td>
           <td class="url"><%= log.url %></td>
-          <td><%= log.statusCode %></td>
-          <td><%= log.durationMs.toFixed(2) %></td>
         </tr>
       <% }) %>
       <% if (logs.length === 0) { %>
-        <tr><td colspan="6">В журнале пока нет записей.</td></tr>
+        <tr><td colspan="3">В журнале пока нет записей.</td></tr>
       <% } %>
     </tbody>
   </table>

@@ -8,6 +8,7 @@
       <h2><a href="/item/<%= item.id %>"><%= item.title %></a></h2>
       <p class="game"><%= item.game %></p>
       <p><%= item.description %></p>
+      <p class="created">Создана: <%= formatDate(item.createdAt) %> · ID <%= item.id %></p>
       <a href="/item/<%= item.id %>">Подробнее →</a>
     </article>
   <% }) %>
@@ -16,3 +17,5 @@
   <p>Публикаций пока нет. Добавьте первую!</p>
 <% } %>
 <%- include('partials/footer') %>
+
+
