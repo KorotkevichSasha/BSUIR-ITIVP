@@ -7,6 +7,10 @@
   <p>Лайков: <%= item.likesCount %></p>
   <p>Время создания: <%= formatDate(item.createdAt) %> · ID <%= item.id %></p>
   <p class="description"><%= item.description %></p>
-  <a href="<%= item.mediaUrl %>" target="_blank" rel="noopener noreferrer">Открыть медиа ↗</a>
+  <% if (/^https?:\/\//i.test(item.mediaUrl)) { %>
+    <a href="<%= item.mediaUrl %>" target="_blank" rel="noopener noreferrer">Открыть медиа ↗</a>
+  <% } else { %>
+    <p>Адрес медиа: <%= item.mediaUrl %></p>
+  <% } %>
 </article>
 <%- include('partials/footer') %>

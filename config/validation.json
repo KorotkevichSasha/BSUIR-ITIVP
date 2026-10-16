@@ -1,8 +1,11 @@
 {
-  "title": { "minLength": 1, "maxLength": 100 },
-  "game": { "minLength": 1, "maxLength": 80 },
-  "mediaUrl": { "minLength": 1, "maxLength": 2048 },
-  "description": { "minLength": 1, "maxLength": 1000 },
-  "mediaTypes": ["screenshot", "video"],
-  "likesCount": { "min": 0, "max": 1000000 }
+  "title": { "maxLength": 100 },
+  "game": { "maxLength": 80 },
+  "mediaType": { "maxLength": 20 },
+  "mediaUrl": { "maxLength": 2048 },
+  "description": { "maxLength": 1000 },
+  "likesCount": { "maxLength": 7 },
+  "maxItems": 1000,
+  "request": { "bodyBytes": 32768, "parameterLimit": 12, "windowMs": 60000, "maxRequests": 120 },
+  "log": { "maxBytes": 1048576, "tailBytes": 65536, "maxEntries": 100 }
 }

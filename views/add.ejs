@@ -20,10 +20,11 @@
   </select>
 
   <label for="mediaUrl">Ссылка на медиа</label>
-  <input id="mediaUrl" name="mediaUrl" type="url" required maxlength="<%= limits.mediaUrl.maxLength %>" placeholder="https://..." value="<%= values.mediaUrl || '' %>">
+  <input id="mediaUrl" name="mediaUrl" required maxlength="<%= limits.mediaUrl.maxLength %>" placeholder="https://..." value="<%= values.mediaUrl || '' %>">
 
   <label for="likesCount">Количество лайков</label>
-  <input id="likesCount" name="likesCount" type="number" required min="<%= limits.likesCount.min %>" max="<%= limits.likesCount.max %>" step="1" value="<%= values.likesCount %>">
+  <input id="likesCount" name="likesCount" type="text" inputmode="numeric" required maxlength="<%= limits.likesCount.maxLength %>" value="<%= values.likesCount %>">
+  <small>Не более <%= limits.likesCount.maxLength %> цифр. Целое неотрицательное число.</small>
 
   <label for="description">Описание</label>
   <textarea id="description" name="description" rows="3" required maxlength="<%= limits.description.maxLength %>"><%= values.description || '' %></textarea>
@@ -31,4 +32,5 @@
 
   <button type="submit">Опубликовать</button>
 </form>
+<script src="/form.js" defer></script>
 <%- include('partials/footer') %>

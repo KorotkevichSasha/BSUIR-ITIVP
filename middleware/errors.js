@@ -1,3 +1,5 @@
+const { request: limits } = require('../config/validation.json');
+
 function isApiRequest(req) {
   return /^\/(posts|auth|profile|admin)(\/|$)/.test(req.path);
 }
@@ -10,11 +12,21 @@ function notFound(req, res) {
 }
 
 function errorHandler(err, req, res, next) {
-  console.error(err);
-
   if (res.headersSent) {
     return next(err);
   }
+
+  if (err.status === 413 || err.status === 429) {
+    const status = err.status;
+    const title = status === 413 ? 'Слишком большой запрос' : 'Слишком много запросов';
+    const explanation = status === 413
+      ? `Размер тела запроса не должен превышать ${limits.bodyBytes / 1024} КиБ. Форма принимает не более ${limits.parameterLimit} параметров. Уменьшите объём данных и повторите отправку.`
+      : err.publicMessage;
+    if (isApiRequest(req)) return res.status(status).json({ error: title });
+    return res.status(status).render('request-error', { status, title, explanation });
+  }
+
+  console.error(err);
 
   if (err instanceof SyntaxError && err.status === 400) {
     return res.status(400).json({ error: 'Invalid JSON' });

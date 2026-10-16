@@ -1,6 +1,5 @@
 const items = require('../data/items');
-const fs = require('node:fs/promises');
-const { logFile } = require('../middleware/requestLogger');
+const { readRecentLogs } = require('../middleware/requestLogger');
 const limits = require('../config/validation.json');
 
 function getIndex(req, res) {
@@ -22,47 +21,34 @@ function getAdd(req, res) {
 function createItem(req, res) {
   const fields = ['title', 'game', 'mediaType', 'mediaUrl', 'description', 'likesCount'];
   const values = {};
-  for (const field of fields) {
-    values[field] = typeof req.body?.[field] === 'string' ? req.body[field].trim() : '';
-  }
-
   const errors = [];
-  const labels = { title: 'Название', game: 'Игра', mediaUrl: 'Ссылка на медиа', description: 'Описание' };
-  for (const [field, label] of Object.entries(labels)) {
-    if (values[field].length < limits[field].minLength) {
+  const labels = { title: 'Название', game: 'Игра', mediaType: 'Тип медиа', mediaUrl: 'Ссылка на медиа', description: 'Описание', likesCount: 'Количество лайков' };
+  for (const field of fields) {
+    const raw = typeof req.body?.[field] === 'string' ? req.body[field] : '';
+    const maxLength = limits[field].maxLength;
+    // Check length before trimming or converting numbers. Bound the echoed value too.
+    values[field] = raw.trim().slice(0, maxLength);
+    if (raw.length > maxLength) {
+      errors.push(`Поле «${labels[field]}»: не более ${maxLength} символов.`);
+    } else if (!values[field]) {
+      const label = labels[field];
       errors.push(`Поле «${label}» не должно быть пустым или состоять из пробелов.`);
-    } else if (values[field].length > limits[field].maxLength) {
-      errors.push(`Поле «${label}»: не более ${limits[field].maxLength} символов.`);
     }
   }
-  if (!limits.mediaTypes.includes(values.mediaType)) {
-    errors.push('Выберите тип медиа: скриншот или видео.');
+  // This is a numeric counter: keep its stored value finite and nonnegative.
+  if (values.likesCount && !/^\d+$/.test(values.likesCount)) {
+    errors.push('Количество лайков — целое неотрицательное число.');
   }
-
-  let validUrl = false;
-  try {
-    validUrl = ['https:', 'http:'].includes(new URL(values.mediaUrl).protocol);
-  } catch {
-    validUrl = false;
-  }
-
-  if (values.mediaUrl && !validUrl) {
-    errors.push('Ссылка на медиа должна начинаться с http:// или https:// и содержать корректный адрес.');
-  }
-  const likesCount = Number(values.likesCount);
-  if (!/^\d+$/.test(values.likesCount) || !Number.isSafeInteger(likesCount) ||
-      likesCount < limits.likesCount.min || likesCount > limits.likesCount.max) {
-    errors.push(`Количество лайков — целое число от ${limits.likesCount.min} до ${limits.likesCount.max}.`);
-  }
-
+  if (items.length >= limits.maxItems) errors.push('Учебный массив заполнен. Перезапустите сервер для очистки добавленных публикаций.');
   if (errors.length) {
     return res.status(400).render('add', {
       title: 'Добавить публикацию', user: req.user, values, errors, limits,
     });
   }
 
-  const id = items.length ? Math.max(...items.map((item) => item.id)) + 1 : 1;
-  const previousTime = Math.max(...items.map((item) => Date.parse(item.createdAt)), 0);
+  const likesCount = Number(values.likesCount);
+  const id = items.length ? items[items.length - 1].id + 1 : 1;
+  const previousTime = items.length ? Date.parse(items[items.length - 1].createdAt) : 0;
   const createdAt = new Date(Math.max(Date.now(), previousTime + 1)).toISOString();
   items.push({ id, ...values, likesCount, createdAt });
   return res.redirect('/');
@@ -73,8 +59,7 @@ function getLogin(req, res) {
 }
 
 async function getLogs(req, res) {
-  const text = await fs.readFile(logFile, 'utf8');
-  const logs = text.trim().split('\n').filter(Boolean).slice(-100).reverse().map((line) => JSON.parse(line));
+  const logs = await readRecentLogs();
   res.render('logs', { title: 'Журнал запросов', logs });
 }
 

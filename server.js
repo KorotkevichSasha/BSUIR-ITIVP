@@ -4,6 +4,8 @@ const express = require('express');
 const path = require('path');
 const pageRoutes = require('./routes/pageRoutes');
 const requestLogger = require('./middleware/requestLogger');
+const requestLimit = require('./middleware/requestLimit');
+const { request: requestLimits } = require('./config/validation.json');
 const { notFound, errorHandler } = require('./middleware/errors');
 const postRoutes = require('./routes/postRoutes');
 const authRoutes = require('./routes/authRoutes');
@@ -22,9 +24,10 @@ app.locals.formatDate = (value) => new Date(value).toLocaleString('ru-RU', {
 });
 
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(requestLimit);
 app.use(requestLogger);
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(express.json({ limit: requestLimits.bodyBytes }));
+app.use(express.urlencoded({ extended: false, limit: requestLimits.bodyBytes, parameterLimit: requestLimits.parameterLimit }));
 
 app.use('/', pageRoutes);
 
