@@ -1,0 +1,28 @@
+<%- include('partials/header') %>
+<h1><%= title %></h1>
+<p>Пользователь: <strong><%= user.name %></strong></p>
+<% if (error) { %>
+  <p class="error" role="alert"><%= error %></p>
+<% } %>
+<form class="card form" method="post" action="/add?auth=1">
+  <label for="title">Название</label>
+  <input id="title" name="title" required value="<%= values.title || '' %>">
+
+  <label for="game">Игра</label>
+  <input id="game" name="game" required value="<%= values.game || '' %>">
+
+  <label for="mediaType">Тип медиа</label>
+  <select id="mediaType" name="mediaType">
+    <option value="screenshot" <%= values.mediaType === 'screenshot' ? 'selected' : '' %>>Скриншот</option>
+    <option value="video" <%= values.mediaType === 'video' ? 'selected' : '' %>>Видео</option>
+  </select>
+
+  <label for="mediaUrl">Ссылка на медиа</label>
+  <input id="mediaUrl" name="mediaUrl" type="url" required placeholder="https://..." value="<%= values.mediaUrl || '' %>">
+
+  <label for="description">Описание</label>
+  <textarea id="description" name="description" rows="4" required><%= values.description || '' %></textarea>
+
+  <button type="submit">Опубликовать</button>
+</form>
+<%- include('partials/footer') %>

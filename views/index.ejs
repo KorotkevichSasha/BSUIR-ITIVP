@@ -1,0 +1,18 @@
+<%- include('partials/header') %>
+<h1><%= title %></h1>
+<p class="intro">Делитесь скриншотами и видеозаписями любимых игр.</p>
+<div class="cards">
+  <% items.forEach((item) => { %>
+    <article class="card">
+      <p class="badge"><%= item.mediaType === 'video' ? 'Видео' : 'Скриншот' %></p>
+      <h2><a href="/item/<%= item.id %>"><%= item.title %></a></h2>
+      <p class="game"><%= item.game %></p>
+      <p><%= item.description %></p>
+      <a href="/item/<%= item.id %>">Подробнее →</a>
+    </article>
+  <% }) %>
+</div>
+<% if (items.length === 0) { %>
+  <p>Публикаций пока нет. Добавьте первую!</p>
+<% } %>
+<%- include('partials/footer') %>

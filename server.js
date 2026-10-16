@@ -1,6 +1,10 @@
 require('dotenv').config();
 
 const express = require('express');
+const path = require('path');
+const pageRoutes = require('./routes/pageRoutes');
+const requestLogger = require('./middleware/requestLogger');
+const { notFound, errorHandler } = require('./middleware/errors');
 const postRoutes = require('./routes/postRoutes');
 const authRoutes = require('./routes/authRoutes');
 const { authenticate, isAdmin } = require('./middleware/auth');
@@ -10,34 +14,23 @@ const { sequelize } = require('./models');
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-app.use(express.json());
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'views'));
 
-app.get('/', (req, res) => {
-  res.json({ message: 'Game Media API is running' });
-});
+app.use(requestLogger);
+app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+
+app.use('/', pageRoutes);
 
 app.use('/posts', postRoutes);
 app.use('/auth', authRoutes);
 app.get('/profile', authenticate, getProfile);
 app.get('/admin', authenticate, isAdmin, getAdmin);
 
-app.use((req, res) => {
-  res.status(404).json({ error: 'Route not found' });
-});
-
-app.use((err, req, res, next) => {
-  console.error(err);
-
-  if (err instanceof SyntaxError && err.status === 400) {
-    return res.status(400).json({ error: 'Invalid JSON' });
-  }
-
-  if (err.name === 'SequelizeValidationError') {
-    return res.status(400).json({ error: err.errors[0].message });
-  }
-
-  return res.status(500).json({ error: 'Internal server error' });
-});
+app.use(notFound);
+app.use(errorHandler);
 
 async function startServer() {
   try {
@@ -56,4 +49,8 @@ async function startServer() {
   }
 }
 
-startServer();
+if (require.main === module) {
+  startServer();
+}
+
+module.exports = app;
