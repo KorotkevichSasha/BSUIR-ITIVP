@@ -3,7 +3,7 @@ import { LIMITS, MEDIA_TYPES } from '../data.js';
 export default function PostForm({ form, setForm, editingId, onSubmit, onCancel, error, full }) {
   function changeField(event) {
     const { name, value } = event.target;
-    setForm(previous => ({ ...previous, [name]: value }));
+    setForm(previous => ({ ...previous, [name]: value.slice(0, LIMITS[name] ?? 20) }));
   }
 
   return (

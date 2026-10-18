@@ -84,7 +84,7 @@ export default function PostList() {
             <span className="result-count">Показано {visiblePosts.length} из {posts.length}</span></div>
           <div className="filters">
             <div><label htmlFor="search">Поиск</label><input id="search" type="search" value={search}
-              onChange={event => setSearch(event.target.value)} maxLength={LIMITS.search} placeholder="Заголовок, игра или описание" /></div>
+              onChange={event => setSearch(event.target.value.slice(0, LIMITS.search))} maxLength={LIMITS.search} placeholder="Заголовок, игра или описание" /></div>
             <div><label htmlFor="filter">Тип</label><select id="filter" value={type} onChange={event => setType(event.target.value)}>
               <option value="all">Все материалы</option>
               {Object.entries(MEDIA_TYPES).map(([value, label]) => <option key={value} value={value}>{label}</option>)}
