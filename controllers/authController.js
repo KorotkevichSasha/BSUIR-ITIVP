@@ -6,6 +6,7 @@ function validateCredentials(body) {
   if (
     !body ||
     typeof body.email !== 'string' ||
+    body.email.length > 254 ||
     !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(body.email.trim())
   ) {
     return 'A valid email is required';

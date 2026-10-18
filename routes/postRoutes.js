@@ -1,4 +1,5 @@
 const express = require('express');
+const { authenticate } = require('../middleware/auth');
 const {
   getPosts,
   getPostById,
@@ -8,6 +9,7 @@ const {
 } = require('../controllers/postController');
 
 const router = express.Router();
+router.use(authenticate);
 
 router.get('/', getPosts);
 router.get('/:id', getPostById);

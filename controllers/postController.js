@@ -1,4 +1,5 @@
 const { Post } = require('../models');
+const limits = require('../config/postLimits.json');
 
 function validatePost(post) {
   if (!post || typeof post !== 'object' || Array.isArray(post)) {
@@ -17,6 +18,18 @@ function validatePost(post) {
     if (typeof post[field] !== 'string' || post[field].trim() === '') {
       return `Field "${field}" must be a non-empty string`;
     }
+    if (post[field].length > limits[field]) {
+      return `Field "${field}" is too long (maximum ${limits[field]})`;
+    }
+  }
+
+  try {
+    const localMedia = /^\/media\/[a-z0-9._-]+$/i.test(post.mediaUrl.trim());
+    if (!localMedia && !['http:', 'https:'].includes(new URL(post.mediaUrl.trim()).protocol)) {
+      return 'Media URL must use HTTP, HTTPS or a local /media/ path';
+    }
+  } catch {
+    return 'Media URL must use HTTP, HTTPS or a local /media/ path';
   }
 
   if (!['screenshot', 'video'].includes(post.mediaType)) {
@@ -26,14 +39,15 @@ function validatePost(post) {
   if (
     post.comments !== undefined &&
     (!Array.isArray(post.comments) ||
-      !post.comments.every((comment) => typeof comment === 'string'))
+      post.comments.length > 100 ||
+      !post.comments.every((comment) => typeof comment === 'string' && comment.length <= 1000))
   ) {
     return 'Field "comments" must be an array of strings';
   }
 
   if (
     post.likesCount !== undefined &&
-    (!Number.isInteger(post.likesCount) || post.likesCount < 0)
+    (!Number.isInteger(post.likesCount) || post.likesCount < 0 || post.likesCount > 2147483647)
   ) {
     return 'Field "likesCount" must be a non-negative integer';
   }
@@ -64,6 +78,7 @@ async function getPosts(req, res, next) {
 
 async function getPostById(req, res, next) {
   try {
+    if (!/^\d{1,10}$/.test(req.params.id) || Number(req.params.id) > 2147483647) return res.status(400).json({ error: 'Invalid post id' });
     const post = await Post.findByPk(req.params.id);
 
     if (!post) {
@@ -102,6 +117,7 @@ async function createPost(req, res, next) {
 
 async function updatePost(req, res, next) {
   try {
+    if (!/^\d{1,10}$/.test(req.params.id) || Number(req.params.id) > 2147483647) return res.status(400).json({ error: 'Invalid post id' });
     const post = await Post.findByPk(req.params.id);
 
     if (!post) {
@@ -120,7 +136,7 @@ async function updatePost(req, res, next) {
       mediaType: req.body.mediaType,
       mediaUrl: req.body.mediaUrl.trim(),
       description: req.body.description.trim(),
-      comments: req.body.comments || [],
+      comments: req.body.comments ?? post.comments,
       likesCount: req.body.likesCount ?? post.likesCount,
     });
 
@@ -132,6 +148,7 @@ async function updatePost(req, res, next) {
 
 async function deletePost(req, res, next) {
   try {
+    if (!/^\d{1,10}$/.test(req.params.id) || Number(req.params.id) > 2147483647) return res.status(400).json({ error: 'Invalid post id' });
     const deletedCount = await Post.destroy({
       where: { id: req.params.id },
     });

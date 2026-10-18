@@ -1,6 +1,17 @@
 :root { font-family: 'Segoe UI', sans-serif; color: #23343e; background: #f3f5f3; font-synthesis: none; }
 * { box-sizing: border-box; }
 body { margin: 0; }
+fieldset { border: 0; padding: 0; margin: 0; min-width: 0; }
+.auth-panel { max-width: 470px; margin: 25px auto 60px; }
+.auth-panel h1 { font-size: 28px; letter-spacing: -.5px; }
+.account-bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; font-size: 11px; color: #697b80; margin-bottom: 24px; }
+.pending-badge { color: #936b27; font-size: 10px; margin-left: auto; }
+.media-link { display: inline-block; color: #365f50; font-size: 11px; margin: -6px 0 16px; }
+.loading-panel { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.notice button { margin-left: 12px; }
+.spinner { width: 19px; height: 19px; border: 3px solid #d8dfd9; border-top-color: #365f50; border-radius: 50%; animation: spin .8s linear infinite; flex-shrink: 0; }
+@keyframes spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .spinner { animation: none; } }
 button, input, textarea, select { font: inherit; }
 button { cursor: pointer; border: 1px solid #ccd6d2; border-radius: 7px; background: white; color: #344c50; padding: 9px 13px; font-size: 12px; font-weight: 600; }
 button:hover { background: #e9eeeb; }
@@ -31,7 +42,7 @@ textarea { resize: vertical; min-height: 100px; max-height: 350px; }
 .form-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 20px; }
 .primary { background: #365f50; color: #fff; border-color: #365f50; }
 .primary:hover { background: #254c3e; }
-.collection-title { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; padding: 3px 0 18px; }
+.collection-title { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 12px; padding: 3px 0 18px; }
 .result-count { color: #72837e; font-size: 11px; }
 .filters { display: grid; grid-template-columns: minmax(0, 1.5fr) 1fr 1fr; gap: 10px; }
 .filters label { margin-top: 0; }
