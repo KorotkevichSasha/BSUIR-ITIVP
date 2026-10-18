@@ -1,5 +1,5 @@
 const items = require('../data/items');
-const { readRecentLogs } = require('../middleware/requestLogger');
+const { RequestLog } = require('../models');
 const limits = require('../config/validation.json');
 
 function getIndex(req, res) {
@@ -59,14 +59,8 @@ function getLogin(req, res) {
 }
 
 async function getLogs(req, res) {
-  const logs = await readRecentLogs();
+  const logs = await RequestLog.findAll({ order: [['id', 'DESC']], limit: limits.log.maxEntries });
   res.render('logs', { title: 'Журнал запросов', logs });
 }
 
-function testError(req, res, next) {
-  const error = new Error('Проверка middleware обработки ошибки 500');
-  error.publicMessage = 'Вызвана учебная ошибка для демонстрации обработчика. Express передал её в middleware с четырьмя параметрами, которое сформировало эту страницу с HTTP-кодом 500.';
-  next(error);
-}
-
-module.exports = { getIndex, getItem, getAdd, createItem, getLogin, getLogs, testError };
+module.exports = { getIndex, getItem, getAdd, createItem, getLogin, getLogs };

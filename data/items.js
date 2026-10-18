@@ -7,8 +7,8 @@ const items = [
     title: 'Закат в Найт-Сити',
     game: 'Cyberpunk 2077',
     mediaType: 'screenshot',
-    mediaUrl: 'https://example.com/night-city.jpg',
-    description: 'Скриншот вечернего города после завершения задания.',
+    mediaUrl: '/media/night-city.svg',
+    description: 'Локальная демонстрационная иллюстрация вечернего города.',
   },
   {
     id: 2,
@@ -17,8 +17,8 @@ const items = [
     title: 'Победный гол',
     game: 'Rocket League',
     mediaType: 'video',
-    mediaUrl: 'https://example.com/winning-goal.mp4',
-    description: 'Видеозапись решающего момента матча.',
+    mediaUrl: '/media/winning-goal.mp4',
+    description: 'Локальная видеодемонстрация гола на игровой арене.',
   },
 ];
 

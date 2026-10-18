@@ -23,7 +23,7 @@
         "header": [{ "key": "Content-Type", "value": "application/json" }],
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"title\": \"Boss fight\",\n  \"game\": \"Elden Ring\",\n  \"mediaType\": \"video\",\n  \"mediaUrl\": \"https://example.com/boss.mp4\",\n  \"description\": \"Final boss battle\",\n  \"comments\": [\"Amazing!\"],\n  \"likesCount\": 3\n}",
+          "raw": "{\n  \"title\": \"Boss fight\",\n  \"game\": \"Elden Ring\",\n  \"mediaType\": \"video\",\n  \"mediaUrl\": \"/media/winning-goal.mp4\",\n  \"description\": \"Final boss battle\",\n  \"comments\": [\"Amazing!\"],\n  \"likesCount\": 3\n}",
           "options": { "raw": { "language": "json" } }
         },
         "url": "{{baseUrl}}/posts"
@@ -36,7 +36,7 @@
         "header": [{ "key": "Content-Type", "value": "application/json" }],
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"title\": \"Updated boss fight\",\n  \"game\": \"Elden Ring\",\n  \"mediaType\": \"video\",\n  \"mediaUrl\": \"https://example.com/updated.mp4\",\n  \"description\": \"Updated battle\",\n  \"comments\": [],\n  \"likesCount\": 8\n}",
+          "raw": "{\n  \"title\": \"Updated boss fight\",\n  \"game\": \"Elden Ring\",\n  \"mediaType\": \"video\",\n  \"mediaUrl\": \"/media/winning-goal.mp4\",\n  \"description\": \"Updated battle\",\n  \"comments\": [],\n  \"likesCount\": 8\n}",
           "options": { "raw": { "language": "json" } }
         },
         "url": "{{baseUrl}}/posts/3"

@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="540" viewBox="0 0 960 540">
+  <title>Game Media — демонстрационная иллюстрация ночного города</title>
+  <defs><linearGradient id="sky" x2="0" y2="1"><stop stop-color="#152340"/><stop offset="1" stop-color="#d35683"/></linearGradient></defs>
+  <path fill="url(#sky)" d="M0 0h960v540H0z"/>
+  <circle cx="730" cy="150" r="65" fill="#ffce91"/>
+  <g fill="#18243a" stroke="#8e78ba" stroke-width="2">
+    <path d="M0 540V270h95v-60h65v330M165 540V155h115v385M290 540V260h90v280M390 540V110h110v430M515 540V220h125v320M650 540V305h100v235M760 540V195h140v345M915 540V330h45v210"/>
+  </g>
+  <g stroke="#59d9ea" stroke-width="9" stroke-dasharray="15 18"><path d="M195 195v300M245 195v300M420 150v340M470 150v340M550 250v250M600 250v250M790 230v270M850 230v270"/></g>
+  <path stroke="#ed7abb" stroke-width="5" d="M0 510h960"/>
+  <text x="35" y="48" fill="white" font-family="Arial" font-size="24">Game Media · Night City</text>
+  <text x="35" y="78" fill="white" font-family="Arial" font-size="16">Локальная демонстрационная иллюстрация</text>
+</svg>

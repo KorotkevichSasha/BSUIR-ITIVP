@@ -10,6 +10,5 @@ router.get('/login', pages.getLogin);
 router.get('/add', pageAuth, pages.getAdd);
 router.post('/add', pageAuth, pages.createItem);
 router.get('/logs', pageAuth, pages.getLogs);
-router.get('/test-error', pageAuth, pages.testError);
 
 module.exports = router;
