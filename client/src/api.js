@@ -1,5 +1,6 @@
 export const API_URL = (import.meta.env.VITE_API_URL || 'http://localhost:3001').replace(/\/$/, '');
-const TOKEN_KEY = 'game-media-jwt';
+export const IS_MONGO = import.meta.env.VITE_STORAGE === 'mongo';
+const TOKEN_KEY = IS_MONGO ? 'game-media-mongo-jwt' : 'game-media-jwt';
 
 export function readToken() {
   try { return localStorage.getItem(TOKEN_KEY) || ''; } catch { return ''; }

@@ -4,7 +4,7 @@ import { afterEach, beforeEach, expect, it, vi } from 'vitest';
 import * as api from '../api.js';
 import PostList from './PostList.jsx';
 
-vi.mock('../api.js', () => ({ fetchPosts: vi.fn(), addPost: vi.fn(), updatePost: vi.fn(), deletePost: vi.fn(), mediaLink: url => url }));
+vi.mock('../api.js', () => ({ IS_MONGO: false, fetchPosts: vi.fn(), addPost: vi.fn(), updatePost: vi.fn(), deletePost: vi.fn(), mediaLink: url => url }));
 const post = { id: 1, title: 'Первый пост', game: 'Rocket League', mediaType: 'video', mediaUrl: '/media/winning-goal.mp4', description: 'Описание', createdAt: '2026-10-18T10:00:00Z' };
 function deferred() {
   let resolve, reject;

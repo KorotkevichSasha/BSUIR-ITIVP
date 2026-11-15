@@ -1,0 +1,446 @@
+{
+  "info": {
+    "name": "ЛР6 — Game Media MongoDB — Короткевич А.Г.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Параллельная реализация в ветке 26. Запуск: npm run start:mongo. Выполнять запросы по порядку. JWT сохраняется локально в переменной token. Учётная запись MongoDB API отдельная от PostgreSQL. Секретов Atlas в коллекции нет."
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://127.0.0.1:3002",
+      "type": "string"
+    },
+    {
+      "key": "email",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "password",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "postId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "commentId",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "01 Регистрация тестового пользователя",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/auth/register",
+        "auth": {
+          "type": "noauth"
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"{{email}}\",\n  \"password\": \"{{password}}\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.collectionVariables.set('email', 'lab6-postman-' + pm.variables.replaceIn('{{$guid}}') + '@example.test');",
+              "pm.collectionVariables.set('password', pm.variables.replaceIn('{{$guid}}') + '-Lab6');"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 201', () => pm.response.to.have.status(201));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "02 Вход и получение JWT",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/auth/login",
+        "auth": {
+          "type": "noauth"
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"{{email}}\",\n  \"password\": \"{{password}}\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+              "pm.collectionVariables.set('token', pm.response.json().token);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "03 GET список публикаций",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/posts"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200', () => pm.response.to.have.status(200));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "04 POST публикация с tags и metadata",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/posts",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"ЛР6 — Победный гол\",\n  \"game\": \"Rocket League\",\n  \"mediaType\": \"video\",\n  \"mediaUrl\": \"/media/winning-goal.mp4\",\n  \"description\": \"Публикация хранится в MongoDB вместе с тегами и вложенными комментариями.\",\n  \"tags\": [\n    \"финал\",\n    \"лаб6\"\n  ],\n  \"metadata\": {\n    \"platform\": \"PC\",\n    \"resolution\": \"1920x1080\"\n  }\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 201', () => pm.response.to.have.status(201));",
+              "pm.collectionVariables.set('postId', pm.response.json().id);",
+              "pm.test('ObjectId и вложенная metadata', () => { pm.expect(pm.response.json().id).to.match(/^[a-f0-9]{24}$/); pm.expect(pm.response.json().metadata.platform).to.eql('PC'); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "05 GET по ObjectId",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/posts/{{postId}}"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200', () => pm.response.to.have.status(200));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "06 PUT изменение публикации",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/posts/{{postId}}",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"ЛР6 — Гол после редактирования\",\n  \"game\": \"Rocket League\",\n  \"mediaType\": \"video\",\n  \"mediaUrl\": \"/media/winning-goal.mp4\",\n  \"description\": \"Публикация хранится в MongoDB вместе с тегами и вложенными комментариями.\",\n  \"tags\": [\n    \"финал\",\n    \"лаб6\"\n  ],\n  \"metadata\": {\n    \"platform\": \"PC\",\n    \"resolution\": \"1920x1080\"\n  }\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200', () => pm.response.to.have.status(200));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "07 POST вложенный комментарий",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/posts/{{postId}}/comments",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"author\": \"Короткевич А. Г.\",\n  \"text\": \"Вложенный документ внутри массива comments\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 201', () => pm.response.to.have.status(201));",
+              "const comments = pm.response.json().comments; pm.collectionVariables.set('commentId', comments[comments.length - 1]._id);",
+              "pm.test('Комментарий создан', () => pm.expect(pm.response.json().comments).to.have.length.above(0));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "08 PATCH лайк внутри массива",
+      "request": {
+        "method": "PATCH",
+        "header": [],
+        "url": "{{baseUrl}}/posts/{{postId}}/comments/{{commentId}}/likes"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+              "pm.test('likesCount увеличен', () => { const c = pm.response.json().comments.find(c => c._id === pm.collectionVariables.get('commentId')); pm.expect(c.likesCount).to.be.above(0); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "09 GET по тегу и вложенному полю",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/posts?tag=%D0%BB%D0%B0%D0%B16&platform=PC"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200', () => pm.response.to.have.status(200));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "10 GET агрегация по играм",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/posts/stats"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200', () => pm.response.to.have.status(200));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "11 Ошибка 400 неверный ObjectId",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/posts/not-an-id"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 400', () => pm.response.to.have.status(400));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "12 Ошибка 400 пустой заголовок",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/posts",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"   \",\n  \"game\": \"Rocket League\",\n  \"mediaType\": \"video\",\n  \"mediaUrl\": \"/media/winning-goal.mp4\",\n  \"description\": \"Публикация хранится в MongoDB вместе с тегами и вложенными комментариями.\",\n  \"tags\": [\n    \"финал\",\n    \"лаб6\"\n  ],\n  \"metadata\": {\n    \"platform\": \"PC\",\n    \"resolution\": \"1920x1080\"\n  }\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 400', () => pm.response.to.have.status(400));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "13 Ошибка 401 без JWT",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/posts",
+        "auth": {
+          "type": "noauth"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 401', () => pm.response.to.have.status(401));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "14 DELETE возврат удалённого документа",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": "{{baseUrl}}/posts/{{postId}}"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+              "pm.test('Удалён нужный документ', () => pm.expect(pm.response.json().id).to.eql(pm.collectionVariables.get('postId')));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "15 GET после удаления — 404",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/posts/{{postId}}"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 404', () => pm.response.to.have.status(404));"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

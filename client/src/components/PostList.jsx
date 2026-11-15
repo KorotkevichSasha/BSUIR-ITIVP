@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { addPost, deletePost as removePost, fetchPosts, updatePost } from '../api.js';
+import { addPost, deletePost as removePost, fetchPosts, updatePost, IS_MONGO } from '../api.js';
 import { EMPTY_FORM, LIMITS, MEDIA_TYPES } from '../data.js';
 import PostForm from './PostForm.jsx';
 import PostCard from './PostCard.jsx';
@@ -142,7 +142,7 @@ export default function PostList({ onLogout = noop, onUnauthorized = noop }) {
 
   return (
     <>
-      <div className="account-bar"><span>Общая коллекция · PostgreSQL</span>
+      <div className="account-bar"><span>Общая коллекция · {IS_MONGO ? 'MongoDB' : 'PostgreSQL'}</span>
         <button type="button" onClick={onLogout} disabled={Boolean(pending)}>Выйти</button></div>
       <section className="intro">
         <div><p className="eyebrow">ИГРОВЫЕ ПУБЛИКАЦИИ</p><h1>Моменты, которые<br />хочется сохранить.</h1>
@@ -173,7 +173,7 @@ export default function PostList({ onLogout = noop, onUnauthorized = noop }) {
               <option value="newest">Сначала новые</option><option value="oldest">Сначала старые</option><option value="title">По заголовку</option>
             </select></div>
           </div>
-          <p className="feedback" role="status">{message || 'Изменения отправляются в API и сохраняются в PostgreSQL.'}</p>
+          <p className="feedback" role="status">{message || `Изменения отправляются в API и сохраняются в ${IS_MONGO ? 'MongoDB' : 'PostgreSQL'}.`}</p>
           <div className="post-list">
             {visiblePosts.map(post => <PostCard key={post.id} post={post} onEdit={editPost} onDelete={deletePost} disabled={locked} />)}
             {!loading && !loadError && visiblePosts.length === 0 && <div className="empty-state"><h3>{posts.length ? 'Ничего не найдено' : 'Коллекция пока пуста'}</h3>

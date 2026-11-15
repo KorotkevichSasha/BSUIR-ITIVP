@@ -1,3 +1,95 @@
+# ЛР6 — MongoDB параллельно PostgreSQL
+
+Ветка `26`. Короткевич А. Г., группа 320602, вариант 13.
+
+В том же проекте работают две независимые реализации: `server.js` и Sequelize
+для PostgreSQL на 3001, `server-mongo.js` и Mongoose для MongoDB Atlas на 3002.
+ЛР5 сохранена ниже. Запуск MongoDB-сервера не требует соединения с PostgreSQL.
+Данные автоматически между базами не копируются.
+
+## Запуск MongoDB
+
+```powershell
+npm ci
+npm run start:mongo
+```
+
+В локальный корневой `.env` добавить ключи из `.env.mongo.example`:
+`MONGO_URI`, `MONGO_DB_NAME=game_media_lab6`, `MONGO_PORT=3002`.
+Существующий `JWT_SECRET` остаётся локальным. Настоящие URI, пароль и JWT в Git
+не публикуются. Кластер Atlas: Free M0, проект GameMedia-Lab6.
+Пользователь БД ограничивается ролью readWrite на game_media_lab6, сетевой доступ —
+текущим IP ноутбука. При смене сети IP нужно обновить в Atlas.
+
+Для существующего React-клиента есть отдельный режим:
+
+```powershell
+npm --prefix client ci
+npm --prefix client run dev:mongo
+```
+
+Открыть адрес, напечатанный Vite (обычно http://localhost:5173).
+Публичный `client/.env.mongo` содержит только адрес API и выбор режима.
+Если Vite уже запущен в режиме ЛР5, остановить именно Vite и запустить dev:mongo.
+Учётные записи приложений PostgreSQL и MongoDB независимы: для MongoDB
+зарегистрироваться заново. Клиент хранит MongoDB JWT отдельно в game-media-mongo-jwt.
+Удобнее тестировать ЛР6 в Postman: импортировать
+`Lab 6 - MongoDB.postman_collection.json` и выполнять запросы 01–15 по порядку.
+
+## API MongoDB
+
+Все `/posts` требуют MongoDB JWT. `/auth/register` и `/auth/login` открыты.
+
+| Метод и маршрут | Операция Mongoose |
+| --- | --- |
+| GET /posts | find().sort() |
+| GET /posts/:id | findById() |
+| POST /posts | create() |
+| PUT /posts/:id | findByIdAndUpdate(), runValidators |
+| DELETE /posts/:id | findByIdAndDelete(), возвращает удалённый документ |
+| POST /posts/:id/comments | $push вложенного комментария |
+| PATCH /posts/:id/comments/:commentId/likes | $inc comments.$.likesCount |
+| GET /posts?tag=финал&platform=PC | поиск в массиве tags и metadata.platform |
+| GET /posts?author=Александр | поиск по comments.author |
+| GET /posts/stats | aggregation: $match → $group → $sort |
+
+Post хранит tags, metadata и comments в одном документе. Каждый комментарий
+имеет собственный ObjectId, автора, текст, счётчик лайков и дату. При удалении
+публикации вложенные комментарии удаляются вместе с ней, отдельных коллекций
+комментариев нет. Индексы: game + createdAt и tags; email пользователя уникален.
+
+Ограничения: title 100, game 80, mediaUrl 255, description 1000; до 20 разных
+тегов по 30 символов и 100 комментариев. Автор комментария до 80, текст до 1000.
+Изменения счётчика атомарны. В запрос нельзя передать MongoDB-оператор вместо
+значения или произвольно заменить comments/passwordHash/role. Поведение общей
+коллекции сохранено: все вошедшие пользователи могут изменять публикации.
+
+## Проверка и демонстрация ЛР6
+
+```powershell
+npm run test:mongo
+npm run check:mongo
+npm --prefix client test
+npm --prefix client run build
+```
+
+`test:mongo` проверяет схему и ошибки HTTP без базы. `check:mongo` работает
+с настоящей Atlas: создаёт временного пользователя и публикацию, проверяет
+CRUD, вложенный комментарий, атомарный лайк, фильтры и ошибки. Удаляет только
+свои временные записи. Результаты записываются в игнорируемую report-assets/lab6.
+
+В Postman показать POST, GET, PUT, добавление комментария, PATCH лайка и DELETE.
+Перед DELETE открыть Atlas Data Explorer → game_media_lab6 → posts и развернуть
+tags, metadata, comments. В отчёте строка подключения показана с закрытым паролем.
+
+В сравнении с SQL нельзя утверждать, что PostgreSQL не поддерживает вложенные
+данные: предыдущая модель уже использует JSONB для comments. В MongoDB в этой
+работе явно определена схема поддокумента, ObjectId комментария и атомарное
+обновление элемента массива. В нормализованной SQL-схеме комментарии могли бы
+быть отдельной таблицей с внешним ключом, но такая миграция здесь не выполнялась.
+
+---
+
 # ЛР5 — взаимодействие React с сервером
 
 Ветка `25`, Короткевич А. Г., группа 320602, вариант 13.
