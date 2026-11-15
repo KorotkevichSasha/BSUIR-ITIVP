@@ -1,6 +1,9 @@
 const mongoose = require('mongoose');
 
 mongoose.set('bufferCommands', false);
+// Prepare collections/indexes explicitly after connect, not at model compilation.
+mongoose.set('autoCreate', false);
+mongoose.set('autoIndex', false);
 
 async function connectMongo() {
   if (!process.env.MONGO_URI) throw new Error('Set MONGO_URI in the local .env file');

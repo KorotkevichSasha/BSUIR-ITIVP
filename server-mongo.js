@@ -25,7 +25,7 @@ app.use((error, req, res, next) => {
 async function startServer() {
   if (!process.env.JWT_SECRET) throw new Error('JWT_SECRET is required');
   await connectMongo();
-  await Promise.all([require('./mongodb/models/User').init(), require('./mongodb/models/Post').init()]);
+  await Promise.all([require('./mongodb/models/User').createIndexes(), require('./mongodb/models/Post').createIndexes()]);
   const server = app.listen(Number(process.env.MONGO_PORT) || 3002, '127.0.0.1', () => console.log('MongoDB API: http://localhost:' + (process.env.MONGO_PORT || 3002)));
   async function close() { server.close(); await mongoose.disconnect(); }
   process.once('SIGINT', close); process.once('SIGTERM', close);

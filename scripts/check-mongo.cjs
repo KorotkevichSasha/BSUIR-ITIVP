@@ -10,7 +10,7 @@ const { app } = require('../server-mongo');
 (async () => {
   let server, userId, postId, token; const checks = [];
   try {
-    await connectMongo(); await Promise.all([User.init(), Post.init()]);
+    await connectMongo(); await Promise.all([User.createIndexes(), Post.createIndexes()]);
     server = app.listen(0, '127.0.0.1'); await new Promise(resolve => server.once('listening', resolve));
     const base = `http://127.0.0.1:${server.address().port}`;
     async function request(method, path, body, expected) {
